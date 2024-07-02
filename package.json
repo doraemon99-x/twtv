@@ -1,0 +1,16 @@
+{
+    "name": "telegram-bot-nodejs",
+    "version": "1.0.0",
+    "description": "Bot Telegram sederhana dengan Node.js",
+    "main": "bot.js",
+    "scripts": {
+      "start": "node twtv.js"
+    },
+    "author": "Nama Anda",
+    "license": "MIT",
+    "dependencies": {
+      "axios": "^0.24.0",
+      "node-telegram-bot-api": "^0.57.0"
+    }
+  }
+  
