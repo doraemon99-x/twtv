@@ -1,20 +1,23 @@
-# Gunakan node.js versi LTS (14.x saat ini)
+# Gunakan image node resmi
 FROM node:14
 
-# Set direktori kerja di dalam container
-WORKDIR /usr/src/app
+# Buat direktori kerja di dalam container
+WORKDIR /app
 
-# Salin package.json dan package-lock.json (jika ada) untuk instalasi dependensi
+# Salin package.json dan package-lock.json ke dalam direktori kerja
 COPY package*.json ./
 
-# Instal dependensi yang diperlukan
+# Install dependencies
 RUN npm install
 
-# Salin kode aplikasi Anda ke dalam container
+# Salin sisa kode aplikasi ke dalam direktori kerja
 COPY . .
 
-# Expose port yang diperlukan (misalnya, port 3000)
-EXPOSE 3000
+# Buat direktori temp di dalam container
+RUN mkdir /app/temp
 
-# Command untuk menjalankan aplikasi
-CMD ["node", "twtv.js"]
+# Ekspos port (opsional, jika Anda ingin menjalankan bot pada port tertentu)
+# EXPOSE 3000
+
+# Jalankan aplikasi
+CMD ["node", "index.js"]
