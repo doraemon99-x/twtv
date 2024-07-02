@@ -20,4 +20,4 @@ RUN mkdir /app/temp
 # EXPOSE 3000
 
 # Jalankan aplikasi
-CMD ["node", "index.js"]
+CMD ["node", "twtv.js"]
