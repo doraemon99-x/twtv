@@ -9,35 +9,26 @@ const token = '6617017697:AAH7v5lFv1Fes2vmdtCvpsHVfrAsX99ETnI';
 // Inisialisasi bot
 const bot = new TelegramBot(token, { polling: true });
 
-// Pastikan direktori temp ada
-const tempDir = path.join(__dirname, 'temp');
-if (!fs.existsSync(tempDir)) {
-  fs.mkdirSync(tempDir);
-}
-
 // Handler untuk perintah /start
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, 'Halo! Kirimkan saya URL Twitter dan saya akan mencoba mengambil video dari link tersebut.');
 });
 
-// Fungsi untuk mengunduh dan menyimpan video sementara
-const downloadAndSaveVideo = async (videoUrl) => {
-  const videoFileName = path.basename(videoUrl);
-  const videoPath = path.join(tempDir, videoFileName);
-  const writer = fs.createWriteStream(videoPath);
-
-  const videoResponse = await axios({
-    method: 'GET',
-    url: videoUrl,
-    responseType: 'stream'
-  });
-
-  videoResponse.data.pipe(writer);
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', () => resolve(videoPath));
-    writer.on('error', reject);
-  });
+// Fungsi untuk mengunduh dan langsung mengirimkan video ke pengguna
+const downloadAndSendVideo = async (chatId, videoUrl) => {
+  try {
+    // Kirim file video ke pengguna langsung dari URL
+    bot.sendVideo(chatId, videoUrl).then(() => {
+      // Kirim pesan dengan URL video
+      bot.sendMessage(chatId, `Video berhasil ditemukan: ${videoUrl}`);
+    }).catch((error) => {
+      console.error('Gagal mengirim file video:', error);
+      bot.sendMessage(chatId, 'Gagal mengirim file video.');
+    });
+  } catch (error) {
+    console.error('Gagal mengirim file video:', error);
+    bot.sendMessage(chatId, 'Gagal mengirim file video.');
+  }
 };
 
 // Handler untuk perintah /twt
@@ -61,16 +52,8 @@ bot.onText(/\/twt (.+)/, async (msg, match) => {
       if (data.found) {
         const videoUrl = data.media[0].url;
         
-        // Unduh dan simpan file video sementara
-        const videoPath = await downloadAndSaveVideo(videoUrl);
-
-        // Kirim file video ke pengguna
-        bot.sendVideo(chatId, videoPath).then(() => {
-          // Hapus file setelah dikirim
-          fs.unlinkSync(videoPath);
-        }).catch((error) => {
-          console.error('Gagal mengirim file video:', error);
-        });
+        // Kirim file video ke pengguna langsung dari URL
+        downloadAndSendVideo(chatId, videoUrl);
 
       } else {
         bot.sendMessage(chatId, 'Video tidak ditemukan.');
@@ -106,16 +89,8 @@ bot.on('message', async (msg) => {
         if (data.found) {
           const videoUrl = data.media[0].url;
           
-          // Unduh dan simpan file video sementara
-          const videoPath = await downloadAndSaveVideo(videoUrl);
-
-          // Kirim file video ke pengguna
-          bot.sendVideo(chatId, videoPath).then(() => {
-            // Hapus file setelah dikirim
-            fs.unlinkSync(videoPath);
-          }).catch((error) => {
-            console.error('Gagal mengirim file video:', error);
-          });
+          // Kirim file video ke pengguna langsung dari URL
+          downloadAndSendVideo(chatId, videoUrl);
 
         } else {
           bot.sendMessage(chatId, 'Video tidak ditemukan.');
