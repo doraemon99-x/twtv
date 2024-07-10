@@ -4,7 +4,7 @@ const fs = require('fs'); // Import file system module
 const path = require('path'); // Import path module
 
 // Token bot Telegram Anda
-const token = '6617017697:AAH7v5lFv1Fes2vmdtCvpsHVfrAsX99ETnI';
+const token = '6617017697:AAHYhIqDhGDeUBlK0u4tgtl0iWRzcP3wntA';
 
 // Inisialisasi bot
 const bot = new TelegramBot(token, { polling: true });
